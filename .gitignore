@@ -1,0 +1,7 @@
+# Ignore huge AI model files and datasets
+*.pkl
+*.csv
+
+# Ignore Python cache files
+__pycache__/
+*.pyc

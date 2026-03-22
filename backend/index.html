@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .main-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover { background-color: #2980b9; }
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+        }
+        .real-news { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fake-news { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+    <h1>🕵️‍♂️ Fake News Detector</h1>
+    <p>AI-Powered Enterprise Application</p>
+
+    <div class="main-container">
+        <textarea id="newsInput" rows="6" placeholder="Paste the news article here..."></textarea>
+        <button onclick="checkNews()" id="predictBtn">Check News</button>
+
+        <div id="resultBox" class="result-box">
+            <h2 id="predictionText"></h2>
+            <p id="subText"></p>
+        </div>
+    </div>
+
+    <script>
+        async function checkNews() {
+            const newsText = document.getElementById('newsInput').value;
+            const btn = document.getElementById('predictBtn');
+            const resultBox = document.getElementById('resultBox');
+            const predictionText = document.getElementById('predictionText');
+            const subText = document.getElementById('subText');
+
+            if (!newsText) {
+                alert("Please enter some news!");
+                return;
+            }
+
+            btn.innerText = "Analyzing with AI...";
+            btn.disabled = true;
+
+            try {
+                // FastAPI-kku data anupurom
+                const response = await fetch('http://127.0.0.1:8000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: newsText })
+                });
+
+                const data = await response.json();
+                
+                // Result vandhadhum UI-ah maathurom
+                resultBox.style.display = "block";
+                predictionText.innerText = "Prediction: " + data.prediction;
+
+                if (data.prediction === "REAL") {
+                    resultBox.className = "result-box real-news";
+                    subText.innerText = "✅ This news looks authentic.";
+                } else {
+                    resultBox.className = "result-box fake-news";
+                    subText.innerText = "🚨 Warning! This might be fake news.";
+                }
+
+            } catch (error) {
+                alert("Error connecting to server!");
+            } finally {
+                btn.innerText = "Check News";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
