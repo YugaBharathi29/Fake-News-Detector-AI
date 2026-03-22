@@ -3,88 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fake News Detector</title>
+    <title>Fake News Detector | Enterprise AI</title>
     <style>
+        /* --- General Styling --- */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            text-align: center;
-            padding: 50px 20px;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
+        h1 { color: #1a73e8; margin-bottom: 5px; font-size: 2.5rem; }
+        .subtitle { color: #5f6368; margin-bottom: 30px; font-size: 1.1rem; }
+
         .main-container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
+
+        /* --- Info & Disclaimer Section --- */
+        .info-box {
+            background-color: #fff9e6;
+            border-left: 5px solid #ffcc00;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .info-box h4 { margin: 0 0 10px 0; color: #856404; display: flex; align-items: center; }
+        .info-box p { margin: 5px 0; font-size: 0.95rem; color: #664d03; line-height: 1.5; }
+
+        /* --- Input Section --- */
         textarea {
             width: 100%;
-            padding: 15px;
+            padding: 20px;
             font-size: 1.1rem;
-            border: 2px solid #bdc3c7;
-            border-radius: 8px;
+            border: 2px solid #e8eaed;
+            border-radius: 12px;
             box-sizing: border-box;
             margin-bottom: 20px;
             resize: vertical;
+            transition: border-color 0.3s;
         }
+        textarea:focus { outline: none; border-color: #1a73e8; }
+
         button {
-            background-color: #3498db;
+            background-color: #1a73e8;
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 18px;
             font-size: 1.2rem;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             width: 100%;
-            font-weight: bold;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.1s;
         }
-        button:hover { background-color: #2980b9; }
+        button:hover { background-color: #1557b0; }
+        button:active { transform: scale(0.98); }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* --- Result Box --- */
         .result-box {
             margin-top: 30px;
-            padding: 20px;
-            border-radius: 8px;
-            display: none; /* Hidden by default */
+            padding: 25px;
+            border-radius: 12px;
+            display: none;
+            animation: slideDown 0.4s ease-out;
         }
-        .real-news { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .fake-news { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .real-news { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
+        .fake-news { background-color: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
+
+        /* --- History Section --- */
+        .history-section {
+            margin-top: 50px;
+            text-align: left;
+            border-top: 1px solid #e8eaed;
+            padding-top: 30px;
+        }
+        .history-section h3 { color: #3c4043; margin-bottom: 20px; }
+        .history-item {
+            background: #f8f9fa;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 6px solid #dadce0;
+            transition: transform 0.2s;
+        }
+        .history-item:hover { transform: translateX(5px); }
+        .history-item.real { border-left-color: #34a853; }
+        .history-item.fake { border-left-color: #ea4335; }
+
+        .badge {
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .badge-real { background: #ceead6; color: #137333; }
+        .badge-fake { background: #fad2cf; color: #c5221f; }
+        .news-text { color: #5f6368; font-size: 0.95rem; line-height: 1.4; }
     </style>
 </head>
-<body>
+<body onload="loadHistory()">
 
     <h1>🕵️‍♂️ Fake News Detector</h1>
-    <p>AI-Powered Enterprise Application</p>
+    <p class="subtitle">Enterprise AI Solution for News Verification</p>
 
     <div class="main-container">
-        <textarea id="newsInput" rows="6" placeholder="Paste the news article here..."></textarea>
-        <button onclick="checkNews()" id="predictBtn">Check News</button>
+        
+        <div class="info-box">
+            <h4>💡 How it works & Disclaimer</h4>
+            <p>• <b>Technology:</b> Uses <b>Machine Learning (TF-IDF Word Matching)</b> to identify patterns in text.</p>
+            <p>• <b>Accuracy:</b> This enterprise model operates with <b>80-90% accuracy</b> based on the WELFake dataset.</p>
+            <p>• <b>Note:</b> AI predictions can sometimes be wrong. Always verify news with official sources.</p>
+        </div>
+
+        <textarea id="newsInput" rows="6" placeholder="Paste a news article or headline here..."></textarea>
+        
+        <button onclick="checkNews()" id="predictBtn">Verify News Authenticity</button>
 
         <div id="resultBox" class="result-box">
-            <h2 id="predictionText"></h2>
-            <p id="subText"></p>
+            <h2 id="predictionHeading" style="margin-top:0;"></h2>
+            <p id="predictionDesc" style="margin-bottom:0; font-size: 1.1rem;"></p>
+        </div>
+
+        <div class="history-section">
+            <h3>🕒 Recent History (Database)</h3>
+            <div id="historyList">
+                <p style="color: #999;">No searches yet. Your history will appear here.</p>
+            </div>
         </div>
     </div>
 
     <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
         async function checkNews() {
-            const newsText = document.getElementById('newsInput').value;
+            const newsText = document.getElementById('newsInput').value.trim();
             const btn = document.getElementById('predictBtn');
             const resultBox = document.getElementById('resultBox');
-            const predictionText = document.getElementById('predictionText');
-            const subText = document.getElementById('subText');
 
             if (!newsText) {
-                alert("Please enter some news!");
+                alert("Please paste some news text first!");
                 return;
             }
 
-            btn.innerText = "Analyzing with AI...";
+            btn.innerText = "🧠 AI is Analyzing...";
             btn.disabled = true;
 
             try {
-                // FastAPI-kku data anupurom
-                const response = await fetch('http://127.0.0.1:8000/predict', {
+                const response = await fetch(`${API_BASE}/predict`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text: newsText })
@@ -92,23 +176,54 @@
 
                 const data = await response.json();
                 
-                // Result vandhadhum UI-ah maathurom
+                // Show Result
                 resultBox.style.display = "block";
-                predictionText.innerText = "Prediction: " + data.prediction;
+                const isReal = data.prediction === "REAL";
+                
+                resultBox.className = `result-box ${isReal ? 'real-news' : 'fake-news'}`;
+                document.getElementById('predictionHeading').innerText = `Prediction: ${data.prediction}`;
+                document.getElementById('predictionDesc').innerText = isReal 
+                    ? "✅ This content matches patterns of authentic news." 
+                    : "🚨 Warning: This content matches patterns of misinformation.";
 
-                if (data.prediction === "REAL") {
-                    resultBox.className = "result-box real-news";
-                    subText.innerText = "✅ This news looks authentic.";
-                } else {
-                    resultBox.className = "result-box fake-news";
-                    subText.innerText = "🚨 Warning! This might be fake news.";
-                }
+                // Refresh history from database
+                loadHistory();
 
             } catch (error) {
-                alert("Error connecting to server!");
+                alert("Connection Error: Make sure your FastAPI server is running!");
             } finally {
-                btn.innerText = "Check News";
+                btn.innerText = "Verify News Authenticity";
                 btn.disabled = false;
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${API_BASE}/history`);
+                const historyData = await response.json();
+                const historyList = document.getElementById('historyList');
+
+                if (historyData.length === 0) return;
+
+                historyList.innerHTML = ''; 
+
+                historyData.forEach(item => {
+                    const isReal = item.prediction === 'REAL';
+                    const itemClass = isReal ? 'real' : 'fake';
+                    const badgeClass = isReal ? 'badge-real' : 'badge-fake';
+                    const snippet = item.news_text.length > 120 
+                        ? item.news_text.substring(0, 120) + '...' 
+                        : item.news_text;
+
+                    historyList.innerHTML += `
+                        <div class="history-item ${itemClass}">
+                            <span class="badge ${badgeClass}">${item.prediction}</span>
+                            <div class="news-text">"${snippet}"</div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.log("History could not be loaded.");
             }
         }
     </script>
